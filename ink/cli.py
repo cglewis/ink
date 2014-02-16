@@ -11,11 +11,20 @@ class main(object):
     """
     This class is responsible for all commandline operations.
     """
-    def start(self, args):
+    def cli_start(self, args):
+        # !! TODO
         print args
-        print 1
 
-    def watch(self, args):
+    def cli_watch(self, args):
+        # !! TODO
+        print args
+
+    def cli_unwatch(self, args):
+        # !! TODO
+        print args
+
+    def cli_list(self, args):
+        # !! TODO
         print args
 
     def parse_args(self):
@@ -36,7 +45,7 @@ class main(object):
         parse_start.add_argument('-P', '--port',
                                  type=int, default=3469,
                                  help='specify port to run on')
-        parse_start.set_defaults(func=self.start)
+        parse_start.set_defaults(func=self.cli_start)
 
         # watch
         parse_watch = subparsers.add_parser('watch',
@@ -56,7 +65,20 @@ class main(object):
                                  help='NONE=pointer to the original file, \
                                        ALL=cache whole file, \
                                        SMART=subset of the metadata and contents')
-        parse_watch.set_defaults(func=self.watch)
+        parse_watch.set_defaults(func=self.cli_watch)
+
+        # unwatch
+        parse_unwatch = subparsers.add_parser('unwatch',
+                                          help='stop watching a directory')
+        parse_unwatch.add_argument('DIRECTORY',
+                                 help='specify directory to stop watching')
+        parse_unwatch.set_defaults(func=self.cli_unwatch)
+
+        # list
+        parse_list = subparsers.add_parser('list',
+                                          help='list directories being watched')
+        parse_list.set_defaults(func=self.cli_list)
+
         args = parser.parse_args()
         args.func(args)
 
