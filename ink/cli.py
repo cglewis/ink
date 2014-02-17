@@ -27,6 +27,30 @@ class main(object):
         # !! TODO
         print args
 
+    def cli_info(self, args):
+        # !! TODO
+        print args
+
+    def cli_hosts(self, args):
+        # !! TODO
+        print args
+
+    def cli_logs(self, args):
+        # !! TODO
+        print args
+
+    def cli_login(self, args):
+        # !! TODO
+        print args
+
+    def cli_register(self, args):
+        # !! TODO
+        print args
+
+    def cli_search(self, args):
+        # !! TODO
+        print args
+
     def parse_args(self):
         parser = argparse.ArgumentParser()
 
@@ -69,15 +93,63 @@ class main(object):
 
         # unwatch
         parse_unwatch = subparsers.add_parser('unwatch',
-                                          help='stop watching a directory')
+                                              help='stop watching a directory')
         parse_unwatch.add_argument('DIRECTORY',
-                                 help='specify directory to stop watching')
+                                   help='specify directory to stop watching')
         parse_unwatch.set_defaults(func=self.cli_unwatch)
 
         # list
         parse_list = subparsers.add_parser('list',
-                                          help='list directories being watched')
+                                           help='list directories being watched')
         parse_list.set_defaults(func=self.cli_list)
+
+        # info
+        parse_info = subparsers.add_parser('info',
+                                           help='display system-wide information')
+        parse_info.set_defaults(func=self.cli_info)
+
+        # hosts
+        parse_hosts = subparsers.add_parser('hosts',
+                                            help='list hosts that are registered')
+        parse_hosts.set_defaults(func=self.cli_hosts)
+
+        # logs
+        parse_logs = subparsers.add_parser('logs',
+                                           help='server logs')
+        parse_logs.add_argument('HOST',
+                                default="localhost",
+                                help='specify host to get logs from')
+        parse_logs.set_defaults(func=self.cli_logs)
+
+        # login
+        parse_login = subparsers.add_parser('login',
+                                            help='login with credentials for \
+                                                  access to the index')
+        parse_login.add_argument('-e', '--email',
+                                 help='email address')
+        parse_login.add_argument('-u', '--username',
+                                 help='username')
+        parse_login.add_argument('PASSWORD',
+                                 help='password')
+        parse_login.set_defaults(func=self.cli_login)
+
+        # register
+        parse_register = subparsers.add_parser('register',
+                                            help='create an account')
+        parse_register.add_argument('EMAIL',
+                                 help='email address')
+        parse_register.add_argument('USERNAME',
+                                 help='username')
+        parse_register.add_argument('PASSWORD',
+                                 help='password')
+        parse_register.set_defaults(func=self.cli_register)
+
+        # search
+        parse_search = subparsers.add_parser('search',
+                                            help='search for files')
+        parse_search.set_defaults(func=self.cli_search)
+        parse_search.add_argument('QUERY',
+                                 help='query')
 
         args = parser.parse_args()
         args.func(args)
