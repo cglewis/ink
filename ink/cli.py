@@ -6,11 +6,20 @@ Created on 13 February 2014
 """
 
 import argparse
+import redis
 
 class main(object):
     """
     This class is responsible for all commandline operations.
     """
+    def __init__(self, redis_host='localhost', redis_port=6379, redis_db=0):
+        try:
+            self.r = redis.StrictRedis(host=redis_host,
+                                       port=redis_port,
+                                       db=redis_db)
+        except:
+            print "Failed to connect to redis, at %s:%s", redis_host, redis_port
+
     def cli_hosts(self, args):
         # !! TODO
         print args
@@ -41,15 +50,34 @@ class main(object):
 
     def cli_start(self, args):
         # !! TODO
+        # create a file for registration purposes
+        # add a new key to the hosts list in redis
+        # index known directories for this host
         print args
 
     def cli_unwatch(self, args):
         # !! TODO
         print args
 
+    def cli_version(self, args):
+        # !! TODO
+        print args
+
     def cli_watch(self, args):
         # !! TODO
         print args
+        if args.recursive:
+            print 1
+        print args.DIRECTORY
+        # check if this directory is already being watched
+        # check if using the same parameters, update if different
+        try:
+            # !! TODO
+            self.r.set("foo",args.DIRECTORY)
+        except Exception as e:
+            print e
+        # !! TODO
+        # if the server is already started, index this newly added directory
 
     def parse_args(self):
         parser = argparse.ArgumentParser()
@@ -131,13 +159,18 @@ class main(object):
                                    help='specify directory to stop watching')
         parse_unwatch.set_defaults(func=self.cli_unwatch)
 
+        # version
+        parse_version = subparsers.add_parser('version',
+                                           help='show version')
+        parse_version.set_defaults(func=self.cli_version)
+
         # watch
         parse_watch = subparsers.add_parser('watch',
                                           help='watch a directory')
         parse_watch.add_argument('DIRECTORY',
                                  help='specify directory to watch')
         parse_watch.add_argument('-r', '--recursive',
-                                 default=True,
+                                 default=False,
                                  action="store_true",
                                  help='recursively watch a directory')
         parse_watch.add_argument('-m', '--metadata-depth',
