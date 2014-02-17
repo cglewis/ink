@@ -8,7 +8,7 @@ Created on 13 February 2014
 import argparse
 import redis
 
-class main(object):
+class cli(object):
     """
     This class is responsible for all commandline operations.
     """
@@ -187,5 +187,5 @@ class main(object):
         args = parser.parse_args()
         args.func(args)
 
-if __name__ == "__main__": # pragma: no cover
-    main().parse_args()
+def main():
+    cli().parse_args()
