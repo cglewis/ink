@@ -11,7 +11,6 @@ class watch(object):
     """
     This class is responsible for the watch command of the cli.
     """
-
     @classmethod
     def main(self, parent, args):
         # !! TODO
@@ -28,4 +27,3 @@ class watch(object):
             print e
         # !! TODO
         # if the server is already started, index this newly added directory
-

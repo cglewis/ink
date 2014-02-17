@@ -5,11 +5,12 @@ Created on 16 February 2014
 @author: Charlie Lewis
 """
 
+import pkg_resources
+
 class version(object):
     """
     This class is responsible for the version command of the cli.
     """
     @classmethod
     def main(self, args):
-        # !! TODO
-        print args
+        print pkg_resources.get_distribution("ink").version

@@ -7,6 +7,7 @@ Created on 13 February 2014
 
 import argparse
 import redis
+import sys
 from ink.cli_opts import hosts
 from ink.cli_opts import info
 from ink.cli_opts import list
@@ -141,7 +142,9 @@ class cli(object):
                                  help='NONE=pointer to the original file, \
                                        ALL=cache whole file, \
                                        SMART=subset of the metadata and contents')
-        parse_watch.set_defaults(func=watch.watch.main(self, parser.parse_args()))
+        if len(sys.argv) > 1:
+            if sys.argv[1] == 'watch':
+                parse_watch.set_defaults(func=watch.watch.main(self, parser.parse_args()))
 
         args = parser.parse_args()
         if args.func:
