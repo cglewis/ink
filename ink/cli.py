@@ -7,6 +7,18 @@ Created on 13 February 2014
 
 import argparse
 import redis
+from ink.cli_opts import hosts
+from ink.cli_opts import info
+from ink.cli_opts import list
+from ink.cli_opts import login
+from ink.cli_opts import logs
+from ink.cli_opts import register
+from ink.cli_opts import search
+from ink.cli_opts import start
+from ink.cli_opts import stop
+from ink.cli_opts import unwatch
+from ink.cli_opts import version
+from ink.cli_opts import watch
 
 class cli(object):
     """
@@ -18,66 +30,8 @@ class cli(object):
                                        port=redis_port,
                                        db=redis_db)
         except:
-            print "Failed to connect to redis, at %s:%s", redis_host, redis_port
+            print "Failed to connect to redis, at %s:%s", redis_host, redis_port 
 
-    def cli_hosts(self, args):
-        # !! TODO
-        print args
-
-    def cli_info(self, args):
-        # !! TODO
-        print args
-
-    def cli_list(self, args):
-        # !! TODO
-        print args
-
-    def cli_login(self, args):
-        # !! TODO
-        print args
-
-    def cli_logs(self, args):
-        # !! TODO
-        print args
-
-    def cli_register(self, args):
-        # !! TODO
-        print args
-
-    def cli_search(self, args):
-        # !! TODO
-        print args
-
-    def cli_start(self, args):
-        # !! TODO
-        # create a file for registration purposes
-        # add a new key to the hosts list in redis
-        # index known directories for this host
-        print args
-
-    def cli_unwatch(self, args):
-        # !! TODO
-        print args
-
-    def cli_version(self, args):
-        # !! TODO
-        print args
-
-    def cli_watch(self, args):
-        # !! TODO
-        print args
-        if args.recursive:
-            print 1
-        print args.DIRECTORY
-        # check if this directory is already being watched
-        # check if using the same parameters, update if different
-        try:
-            # !! TODO
-            self.r.set("foo",args.DIRECTORY)
-        except Exception as e:
-            print e
-        # !! TODO
-        # if the server is already started, index this newly added directory
 
     def parse_args(self):
         parser = argparse.ArgumentParser()
@@ -87,17 +41,17 @@ class cli(object):
         # hosts
         parse_hosts = subparsers.add_parser('hosts',
                                             help='list hosts that are registered')
-        parse_hosts.set_defaults(func=self.cli_hosts)
+        parse_hosts.set_defaults(func=hosts.hosts.main)
 
         # info
         parse_info = subparsers.add_parser('info',
                                            help='display system-wide information')
-        parse_info.set_defaults(func=self.cli_info)
+        parse_info.set_defaults(func=info.info.main)
 
         # list
         parse_list = subparsers.add_parser('list',
                                            help='list directories being watched')
-        parse_list.set_defaults(func=self.cli_list)
+        parse_list.set_defaults(func=list.list.main)
 
         # login
         parse_login = subparsers.add_parser('login',
@@ -109,7 +63,7 @@ class cli(object):
                                  help='username')
         parse_login.add_argument('PASSWORD',
                                  help='password')
-        parse_login.set_defaults(func=self.cli_login)
+        parse_login.set_defaults(func=login.login.main)
 
         # logs
         parse_logs = subparsers.add_parser('logs',
@@ -117,7 +71,7 @@ class cli(object):
         parse_logs.add_argument('HOST',
                                 default="localhost",
                                 help='specify host to get logs from')
-        parse_logs.set_defaults(func=self.cli_logs)
+        parse_logs.set_defaults(func=logs.logs.main)
 
         # register
         parse_register = subparsers.add_parser('register',
@@ -128,12 +82,12 @@ class cli(object):
                                     help='username')
         parse_register.add_argument('PASSWORD',
                                     help='password')
-        parse_register.set_defaults(func=self.cli_register)
+        parse_register.set_defaults(func=register.register.main)
 
         # search
         parse_search = subparsers.add_parser('search',
                                             help='search for files')
-        parse_search.set_defaults(func=self.cli_search)
+        parse_search.set_defaults(func=search.search.main)
         parse_search.add_argument('QUERY',
                                   help='query')
 
@@ -150,19 +104,24 @@ class cli(object):
         parse_start.add_argument('-P', '--port',
                                  type=int, default=3469,
                                  help='specify port to run on')
-        parse_start.set_defaults(func=self.cli_start)
+        parse_start.set_defaults(func=start.start.main)
+
+        # stop
+        parse_stop = subparsers.add_parser('stop',
+                                           help='stop the ink service')
+        parse_stop.set_defaults(func=stop.stop.main)
 
         # unwatch
         parse_unwatch = subparsers.add_parser('unwatch',
                                               help='stop watching a directory')
         parse_unwatch.add_argument('DIRECTORY',
                                    help='specify directory to stop watching')
-        parse_unwatch.set_defaults(func=self.cli_unwatch)
+        parse_unwatch.set_defaults(func=unwatch.unwatch.main)
 
         # version
         parse_version = subparsers.add_parser('version',
                                            help='show version')
-        parse_version.set_defaults(func=self.cli_version)
+        parse_version.set_defaults(func=version.version.main)
 
         # watch
         parse_watch = subparsers.add_parser('watch',
@@ -182,10 +141,14 @@ class cli(object):
                                  help='NONE=pointer to the original file, \
                                        ALL=cache whole file, \
                                        SMART=subset of the metadata and contents')
-        parse_watch.set_defaults(func=self.cli_watch)
+        parse_watch.set_defaults(func=watch.watch.main(self, parser.parse_args()))
 
         args = parser.parse_args()
-        args.func(args)
+        if args.func:
+            args.func(args)
 
 def main():
     cli().parse_args()
+
+if __name__ == "__main__": # pragma: no cover
+    main()

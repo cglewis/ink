@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='ink',
-    version='0.1.1',
-    packages=['ink', ],
+    version='0.1.3',
+    packages=['ink', 'ink.cli_opts', ],
     license='LICENSE',
     description='Easy way to index metadata and content of files in specific directories and make them easily searchable and retrievable, in a distributed environment.',
     long_description=open('README.md').read(),
