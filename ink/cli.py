@@ -7,6 +7,7 @@ Created on 13 February 2014
 
 import argparse
 import redis
+import socket
 import sys
 from ink.cli_opts import hosts
 from ink.cli_opts import info
@@ -100,12 +101,14 @@ class cli(object):
                                  action="store_true",
                                  default=False)
         parse_start.add_argument('-H', '--host',
-                                 default="0.0.0.0",
+                                 default=socket.getfqdn(),
                                  help='specify host to run on')
         parse_start.add_argument('-P', '--port',
                                  type=int, default=3469,
                                  help='specify port to run on')
-        parse_start.set_defaults(func=start.start.main)
+        if len(sys.argv) > 1:
+            if sys.argv[1] == 'start':
+                parse_start.set_defaults(func=start.start.main(self, parser.parse_args()))
 
         # stop
         parse_stop = subparsers.add_parser('stop',
