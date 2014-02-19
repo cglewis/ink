@@ -77,3 +77,4 @@ class start(object):
                 if '.git' in dirnames:
                     # don't go into any .git directories.
                     dirnames.remove('.git')
+        print
