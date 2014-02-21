@@ -6,6 +6,7 @@ Created on 16 February 2014
 """
 
 import os
+import socket
 import sys
 import time
 
@@ -18,20 +19,44 @@ class start(object):
     @classmethod
     def main(self, parent, args):
         omitted_dirs = ['/dev', '/proc', '/sys', '/Volumes', '/mnt', '/net']
+        ink_directory = "/var/lib/ink"
+        host_file = os.path.join(ink_directory, 'host')
+        ink_host = args.host
 
-        # create a file for registration purposes
-        # !! TODO
+        # check if file for host already exists
+        # if it exists, and host arg isn't default, update
+        if os.path.isfile(host_file):
+            if args.host != socket.getfqdn():
+                with open(host_file, 'w') as f:
+                    f.write(ink_host)
+            else:
+                with open(host_file, 'r') as f:
+                    ink_host = f.readline()
+
+        # create a file for host registration purposes
+        if not os.path.exists(ink_directory):
+            os.makedirs(ink_directory)
+            with open(host_file, 'w') as f:
+                f.write(ink_host)
 
         # check if key for this host already exists
-        # !! TODO
+        num_hosts = parent.r.llen('hosts')
+        found = i = 0
+        while i < int(num_hosts):
+            if parent.r.lindex('hosts', i) == ink_host:
+                found = 1
+            i += 1
 
         # otherwise add a new key to the hosts list in redis
-        parent.r.rpush('hosts', args.host)
+        if not found:
+            parent.r.rpush('hosts', ink_host)
 
         # get known directories
         # !! TODO
         directories = ["/"]
-        # !! TODO if directory starts with any of the omitted_dirs, remove from omitted_dirs
+
+        # !! TODO if directory starts with any of the omitted_dirs,
+        #         remove from omitted_dirs
         for directory in directories:
             # index known directories for this host
             for dirname, dirnames, filenames in os.walk(directory):
@@ -40,9 +65,9 @@ class start(object):
                 else:
                     # print path to all filenames.
                     for filename in filenames:
-                        rows,columns = os.popen('stty size', 'r').read().split()
+                        rows,cols = os.popen('stty size', 'r').read().split()
                         rows = int(rows)
-                        columns = int(columns)
+                        cols = int(cols)
 
                         # add file to the host:dir list
                         parent.r.rpush(args.host+":"+directory, os.path.join(dirname, filename))
