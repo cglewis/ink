@@ -5,6 +5,7 @@ Created on 16 February 2014
 @author: Charlie Lewis
 """
 
+import json
 import os
 import socket
 import sys
@@ -72,32 +73,33 @@ class start(object):
                         # add file to the host:dir list
                         parent.r.rpush(args.host+":"+directory, os.path.join(dirname, filename))
                         sys.stdout.write('\r')
-                        sys.stdout.write(' ' * columns)
+                        sys.stdout.write(' ' * cols)
                         sys.stdout.write('\r')
-                        sys.stdout.write('processing: {}'.format(os.path.join(dirname, filename)[:columns-13]))
+                        sys.stdout.write('processing: {}'.format(os.path.join(dirname, filename)[:cols-13]))
                         sys.stdout.flush()
                         try:
                             st = os.stat(os.path.join(dirname, filename))
+                            value = json.dumps({"size": st[ST_SIZE],
+                                                "modified": time.asctime(time.localtime(st[ST_MTIME])),
+                                                "accessed": time.asctime(time.localtime(st[ST_ATIME]))})
+                            # todo this should probably be under a list called 'host:directory:file'
                             parent.r.hmset(args.host+":"+directory+":"+os.path.join(dirname, filename),
-                                           "size", st[ST_SIZE],
-                                           "modified", time.asctime(time.localtime(st[ST_MTIME])),
-                                           "accessed", time.asctime(time.localtime(st[ST_ATIME])))
+                                           json.loads(value))
                             #print "\tfile size: ",st[ST_SIZE],
                             #print "\tfile modified: ",time.asctime(time.localtime(st[ST_MTIME])),
                             #print "\tfile last accessed: ",time.asctime(time.localtime(st[ST_ATIME])),
                             try:
                                 import pwd # not available on all platforms
                                 userinfo = pwd.getpwuid(st[ST_UID])
-                            except (ImportError, KeyError):
-                                junk = 1
-                                #print "failed to get the owner name for", file
-                            else:
                                 parent.r.hset(args.host+":"+directory+":"+os.path.join(dirname, filename),
                                               "owner", userinfo[0])
                                 #print "\tfile owned by:", userinfo[0]
-                        except:
-                            junk = 1
-                            #print "no metadata"
+                            except (ImportError, KeyError):
+                                junk = 1
+                                #print "failed to get the owner name for", file
+                            except:
+                                junk = 1
+                                #print "no metadata"
                 # editing the 'dirnames' list will stop os.walk() from recursing into there.
                 if '.git' in dirnames:
                     # don't go into any .git directories.

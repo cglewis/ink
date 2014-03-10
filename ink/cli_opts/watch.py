@@ -22,6 +22,7 @@ class watch(object):
         # check if using the same parameters, update if different
         try:
             # !! TODO
+            #    this should be a list called 'host:directories'
             parent.r.set("foo",args.DIRECTORY)
         except Exception as e:
             print e
