@@ -97,9 +97,9 @@ class start(object):
                             except (ImportError, KeyError):
                                 junk = 1
                                 #print "failed to get the owner name for", file
-                            except:
-                                junk = 1
-                                #print "no metadata"
+                        except:
+                            junk = 1
+                            #print "no metadata"
                 # editing the 'dirnames' list will stop os.walk() from recursing into there.
                 if '.git' in dirnames:
                     # don't go into any .git directories.
