@@ -1,0 +1,110 @@
+ink
+
+commands
+	start		start the ink service
+			--daemon
+			--host=host:port
+	watch		watch a directory
+			DIRECTORY
+			--recursive=true
+			--metadata-depth
+				1 just about the file, not the contents
+				2 contents
+				3 external metadata about the contents
+			--cache=SIMPLE (metadata about the file)
+					ALL (actual file)
+					SMART (some compromise between metadata, and everything, based on something...)
+					NONE (nothing except that the file exists and how to retrieve it)
+	unwatch		stop watching a directory
+			DIRECTORY
+	list		list directories being watched
+	info		display system-wide information
+	hosts		hosts that are registered serving directories
+	logs		server logs
+			HOST
+	login		login with creds for access to the index
+			--email
+			--password
+			--username
+	register	create an account
+			--email
+			--password
+			--username
+	search		search for files
+			QUERY
+			--geofence ?
+			--lat
+			--long
+			--year
+			--month
+			--day
+			--hour
+			--minute
+			--second
+			--term
+			--value RANGE multiples?
+
+/api/v1/
+
+server auto-detect other servers
+add servers to namespaces
+heirarchy of namespaces
+set permissions at the directory level
+watch a directory for changes, and subsequently update the index, etc.
+	for deletion, mark the record as deleted, but don't actually delete, this will make things more simple
+login so that that queries can be made with the proper acls
+	tokens? pki? cookies?
+
+preview files
+retrieve original files from original location
+look at metadata of files
+caching files that have been retrieved before, with a TTL ?
+
+automatically build charts and graphs based off the metadata, by acl, globally, by namespace, by query
+	think kibana
+
+gmail like interface of files by date in your acl/namespace, tack on search
+
+system level administration, monitoring, charts, info.
+
+failover, redundancy, elasticsearch, maybe couchbase.
+
+filetypes:
+
+zip
+tar.gz
+html
+text
+pdf
+doc
+powerpoint
+excel
+images
+video
+audio
+
+list of hosts
+for each host, list of directories
+for each directory, list of files
+hash of host:directory:file, fields are metadata
+
+lpush hosts host1
+lpush hosts host2
+lpush hosts host3
+lrange hosts 0 -1
+
+lpush host1 dir1
+lpush host1 /
+lpush host1 .
+lrange host1 0 -1
+
+lpush host1:/ file1
+lpush host1:/ file2
+lpush host1:/ file3
+lrange host1 0 -1
+
+keys *
+
+hset host1:/:file1 foo bar
+hget host1:/:file1 foo
+hgetall host1:/:file1
